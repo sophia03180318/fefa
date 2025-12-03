@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title th:text="${knowledgeCard.id} != null ? '编辑知识卡' : '新增知识卡'">知识卡</title>
+    <style>
+        body { background-color: #F8F9FA; }
+        .form-container { width: 500px; margin: 20px auto; background: #fff; padding: 20px; border: 1px solid #ccc; }
+        .form-container h3 { text-align: center; color: blue; }
+        .form-container div { margin: 8px 0; }
+        .form-container input, .form-container textarea, .form-container select { width: 100%; padding: 5px; }
+        .btn-primary { background: blue; color: #fff; padding: 5px 15px; border: none; }
+    </style>
+</head>
+<body>
+<div class="form-container">
+    <h3 th:text="${knowledgeCard.id} != null ? '编辑知识卡' : '新增知识卡'">知识卡表单</h3>
+    <form th:action="@{/knowledge/save}" th:object="${knowledgeCard}" method="post">
+        <div>标题：<input type="text" th:field="*{title}" required /></div>
+        <div>类别：
+            <select th:field="*{category}">
+                <option value="技术">技术</option>
+                <option value="生活">生活</option>
+                <option value="其他">其他</option>
+            </select>
+        </div>
+        <div>内容：<textarea th:field="*{content}" rows="5" required></textarea></div>
+        <input type="hidden" th:field="*{id}" />
+        <div style="text-align:center; margin-top: 10px;">
+            <button type="submit" class="btn-primary">保存</button>
+            <a th:href="@{/knowledge/list}" style="margin-left: 10px;">返回列表</a>
+        </div>
+    </form>
+</div>
+</body>
+</html>

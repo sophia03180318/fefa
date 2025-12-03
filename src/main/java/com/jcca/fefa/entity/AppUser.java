@@ -10,9 +10,10 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 import java.io.Serializable;
+
 @Data
-@TableName("user")  // 对应数据库中的用户表
-public class User implements Serializable {
+@TableName("app_user")  //app的用户表
+public class AppUser implements Serializable {
     @TableId(value = "id")      // 主键
     private Long id;
     private String username;    // 用户名称

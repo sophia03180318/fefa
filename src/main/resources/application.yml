@@ -1,0 +1,21 @@
+server:
+  port: 5720  # 服务启动端口
+
+spring:
+  datasource:
+    url: jdbc:mysql://192.168.51.121:3306/fefa?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+    username: root
+    password: 123456
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+    mode: HTML5
+    encoding: UTF-8
+    cache: false
+    # above ensures Thymeleaf looks for .html templates in classpath templates folder:contentReference[oaicite:2]{index=2}
+
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl  # SQL打印日志（可选）

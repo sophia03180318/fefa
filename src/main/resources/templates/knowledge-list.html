@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>知识卡管理</title>
+    <style>
+        body { background-color: #F8F9FA; }
+        table { width: 90%; margin: 20px auto; border-collapse: collapse; }
+        th, td { border: 1px solid #aaa; padding: 8px; }
+        th { background-color: #007BFF; color: #fff; }
+        .actions a { margin: 0 5px; color: green; }
+        .header { width: 90%; margin: 10px auto; }
+    </style>
+</head>
+<body>
+<div class="header">
+    <!-- 导航 -->
+    <div style="text-align: right;">
+        <a th:href="@{/user/list}">用户管理</a> |
+        <a th:href="@{/logout}">退出登录</a>
+    </div>
+    <h2 style="color: blue; text-align: center;">知识卡列表</h2>
+
+    <!-- 筛选和搜索表单 -->
+    <form th:action="@{/knowledge/list}" method="get" style="text-align: center; margin-bottom: 10px;">
+        分类：
+        <select name="category">
+            <option value="">[所有类别]</option>
+            <!-- 可以将可选类别从后台传入，这里简单写死几个示例 -->
+            <option value="技术" th:selected="${currentCategory=='技术'}">技术</option>
+            <option value="生活" th:selected="${currentCategory=='生活'}">生活</option>
+            <option value="其他" th:selected="${currentCategory=='其他'}">其他</option>
+        </select>
+        标题关键字：<input type="text" name="keyword" th:value="${keyword}" />
+        <button type="submit">查询</button>
+        <a th:href="@{/knowledge/list}" style="margin-left: 10px;">重置</a>
+    </form>
+</div>
+
+<table>
+    <tr>
+        <th>ID</th><th>标题</th><th>类别</th><th>内容摘要</th><th>操作</th>
+    </tr>
+    <tr th:each="card : ${pageData.records}">
+        <td th:text="${card.id}"></td>
+        <td th:text="${card.title}"></td>
+        <td th:text="${card.category}"></td>
+        <td th:text="${#strings.substring(card.content,0,20) + '...'}"></td>
+        <td class="actions">
+            <a th:href="@{/knowledge/edit(id=${card.id})}">编辑</a>
+            <a th:href="@{/knowledge/delete(id=${card.id})}"
+               onclick="return confirm('确定删除该知识卡吗？');">删除</a>
+        </td>
+    </tr>
+</table>
+
+<!-- 分页控制 -->
+<div style="text-align: center; margin: 10px;">
+    第 <span th:text="${pageData.current}">1</span> /
+    <span th:text="${pageData.pages}">1</span> 页，
+    共 <span th:text="${pageData.total}">0</span> 条记录 <br/>
+    <a th:if="${pageData.current>1}"
+       th:href="@{/knowledge/list(page=${pageData.current-1}, keyword=${keyword}, category=${currentCategory})}">上一页</a>
+    <a th:if="${pageData.current < pageData.pages}"
+       th:href="@{/knowledge/list(page=${pageData.current+1}, keyword=${keyword}, category=${currentCategory})}">下一页</a>
+</div>
+
+<!-- 新增按钮 -->
+<div style="width:90%; text-align: right; margin: 10px auto;">
+    <a th:href="@{/knowledge/new}" style="background: green; color: #fff; padding: 6px 12px; text-decoration: none;">新增知识卡</a>
+</div>
+</body>
+</html>

@@ -1,3 +1,4 @@
+
 package com.jcca.fefa.service;
 
 /**
@@ -6,9 +7,7 @@ package com.jcca.fefa.service;
  * @create: 2025/12/03 15:32
  **/
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.jcca.fefa.entity.User;
+import com.jcca.fefa.entity.AppUser;
 
-public interface UserService extends IService<User> {
-    // 可定义额外的业务方法，比如根据邮箱查找用户等
-    User getByEmail(String email);
+public interface AppUserService extends IService<AppUser> {
 }
