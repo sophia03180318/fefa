@@ -28,7 +28,7 @@ public class KnowledgeCardController {
                                      @RequestParam(value="page", defaultValue="1") int page,
                                      @RequestParam(value="keyword", required=false) String keyword,
                                      @RequestParam(value="category", required=false) String category) {
-        Page<KnowledgeCard> pageParam = new Page<>(page, 5);
+        Page<KnowledgeCard> pageParam = new Page<>(page, 10);
         // 构建查询条件
         com.baomidou.mybatisplus.core.conditions.query.QueryWrapper<KnowledgeCard> query =
                 new com.baomidou.mybatisplus.core.conditions.query.QueryWrapper<>();
@@ -42,6 +42,7 @@ public class KnowledgeCardController {
         }
         IPage<KnowledgeCard> pageData = cardService.page(pageParam, query);
         model.addAttribute("pageData", pageData);
+        model.addAttribute("activeMenu", "knowledge");
         return "knowledge-list";
     }
 

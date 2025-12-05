@@ -1,36 +1,198 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+
 <head>
-    <meta charset="UTF-8" />
-    <title th:text="${knowledgeCard.id} != null ? '编辑知识卡' : '新增知识卡'">知识卡</title>
+    <title>知识卡</title>
+
     <style>
-        body { background-color: #F8F9FA; }
-        .form-container { width: 500px; margin: 20px auto; background: #fff; padding: 20px; border: 1px solid #ccc; }
-        .form-container h3 { text-align: center; color: blue; }
-        .form-container div { margin: 8px 0; }
-        .form-container input, .form-container textarea, .form-container select { width: 100%; padding: 5px; }
-        .btn-primary { background: blue; color: #fff; padding: 5px 15px; border: none; }
+        body {
+            font-family: "Inter", "PingFang SC", "Microsoft YaHei", sans-serif;
+        }
+
+        /* ======= 弹窗遮罩 ======= */
+        .modal-mask {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.45);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+        }
+
+        /* ======= 弹窗内容 ======= */
+        .modal-container {
+            width: 720px;
+            background: #fff;
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            animation: popup 0.25s ease-out;
+            position: relative;
+        }
+
+        @keyframes popup {
+            from { transform: scale(0.92); opacity: 0; }
+            to   { transform: scale(1); opacity: 1; }
+        }
+
+        /* 关闭按钮 */
+        .modal-close {
+            position: absolute;
+            right: 18px;
+            top: 18px;
+            background: transparent;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: #888;
+        }
+
+        .modal-close:hover {
+            color: #444;
+        }
+
+        /* ======= 表单样式 ======= */
+        h3 {
+            margin-top: 0;
+            font-size: 24px;
+            color: #2F6FD4;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #444;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        input[type="text"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #d0d5dd;
+            border-radius: 10px;
+            font-size: 14px;
+            background: #f9fbff;
+            transition: 0.2s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: #2F6FD4;
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(47,111,212,0.15);
+        }
+
+        textarea {
+            height: 150px;
+            resize: vertical;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        .btn-primary {
+            padding: 10px 22px;
+            background: #2F6FD4;
+            border-radius: 8px;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        .btn-primary:hover {
+            background: #1f54b6;
+        }
+
+        .btn-ghost {
+            padding: 10px 22px;
+            background: #fff;
+            border: 1px solid #d0d5dd;
+            border-radius: 8px;
+            color: #55607a;
+            text-decoration: none;
+        }
+
+        .btn-ghost:hover {
+            background: #f3f6fb;
+        }
     </style>
+
+    <script>
+        function openModal() {
+            document.getElementById("modal").style.display = "flex";
+        }
+        function closeModal() {
+            document.getElementById("modal").style.display = "none";
+        }
+    </script>
+
 </head>
-<body>
-<div class="form-container">
-    <h3 th:text="${knowledgeCard.id} != null ? '编辑知识卡' : '新增知识卡'">知识卡表单</h3>
-    <form th:action="@{/knowledge/save}" th:object="${knowledgeCard}" method="post">
-        <div>标题：<input type="text" th:field="*{title}" required /></div>
-        <div>类别：
-            <select th:field="*{category}">
-                <option value="技术">技术</option>
-                <option value="生活">生活</option>
-                <option value="其他">其他</option>
-            </select>
+
+<section layout:fragment="content">
+
+    <!-- ========= 点击按钮打开弹窗 ========= -->
+    <button onclick="openModal()" class="btn-primary" style="margin-bottom:16px;">
+        新增
+    </button>
+
+    <!-- ========= 弹窗区域 ========= -->
+    <div id="modal" class="modal-mask" onclick="closeModal()">
+
+        <div class="modal-container" onclick="event.stopPropagation()">
+
+            <button class="modal-close" onclick="closeModal()">×</button>
+
+            <h3 th:text="${knowledgeCard.id != null ? '编辑知识卡' : '新增知识卡'}"></h3>
+
+            <form th:action="@{/knowledge/save}" th:object="${knowledgeCard}" method="post">
+
+                <div>
+                    <label>标题</label>
+                    <input type="text" th:field="*{title}" required/>
+                </div>
+
+                <div>
+                    <label>类别</label>
+                    <select th:field="*{category}">
+                        <option value="技术">技术</option>
+                        <option value="生活">生活</option>
+                        <option value="其他">其他</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label>内容</label>
+                    <textarea th:field="*{content}" required></textarea>
+                </div>
+
+                <input type="hidden" th:field="*{id}"/>
+
+                <div class="actions">
+                    <button class="btn-primary">保存</button>
+                    <button type="button" class="btn-ghost" onclick="closeModal()">取消</button>
+                </div>
+
+            </form>
         </div>
-        <div>内容：<textarea th:field="*{content}" rows="5" required></textarea></div>
-        <input type="hidden" th:field="*{id}" />
-        <div style="text-align:center; margin-top: 10px;">
-            <button type="submit" class="btn-primary">保存</button>
-            <a th:href="@{/knowledge/list}" style="margin-left: 10px;">返回列表</a>
-        </div>
-    </form>
-</div>
-</body>
+
+    </div>
+
+</section>
+
 </html>

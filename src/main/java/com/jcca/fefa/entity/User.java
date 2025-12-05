@@ -16,6 +16,7 @@ public class User implements Serializable {
     @TableId(value = "id")      // 主键
     private Long id;
     private String username;    // 用户名称
+    private String email;
     private String password;    // 加密后的用户密码
 
 }

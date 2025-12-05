@@ -5,6 +5,7 @@ package com.jcca.fefa.controller;
  * @author: sophia
  * @create: 2025/12/03 15:51
  **/
+
 import com.jcca.fefa.entity.User;
 import com.jcca.fefa.service.UserService;
 import org.springframework.stereotype.Controller;
@@ -23,8 +24,9 @@ public class LoginController {
     private UserService userService;
 
     @GetMapping("/")
-    public String homeRedirect() {
-        return "redirect:/login";
+    public String homeRedirect(HttpServletRequest request) {
+        Object loggedUser = request.getSession().getAttribute("loggedUser");
+        return loggedUser != null ? "redirect:/knowledge/list" : "redirect:/login";
     }
 
     // 显示登录页面
@@ -51,7 +53,7 @@ public class LoginController {
         }
         // 登录成功，在session中记录用户信息，并重定向到用户列表页面
         request.getSession().setAttribute("loggedUser", user);
-        return "redirect:/user/list";
+        return "redirect:/knowledge/list";
     }
 
     // 用户登出

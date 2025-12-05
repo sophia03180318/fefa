@@ -1,73 +1,321 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+
 <head>
-    <meta charset="UTF-8" />
-    <title>知识卡管理</title>
+    <title>知识卡中心</title>
+
     <style>
-        body { background-color: #F8F9FA; }
-        table { width: 90%; margin: 20px auto; border-collapse: collapse; }
-        th, td { border: 1px solid #aaa; padding: 8px; }
-        th { background-color: #007BFF; color: #fff; }
-        .actions a { margin: 0 5px; color: green; }
-        .header { width: 90%; margin: 10px auto; }
+        /* 整体布局 */
+        body {
+            background: #f5f7fb;
+            font-family: "Inter", "PingFang SC", "Microsoft YaHei", sans-serif;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+
+        /* 卡片 */
+        .card {
+            background: #fff;
+            padding: 24px;
+            margin-bottom: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+
+
+        /* 圆润标题 */
+        .card-header h2 {
+            margin: 0;
+            font-family: 'Poppins', 'Nunito', 'PingFang SC', sans-serif;
+            color: #2F6FD4;
+            font-size: 26px;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+            display: flex;
+            align-items: center;
+        }
+
+        /* 标题左侧圆角色条 */
+        .card-header h2::before {
+            content: "";
+            width: 8px;
+            height: 28px;
+            border-radius: 8px;
+            background: #2F6FD4;
+            margin-right: 12px;
+        }
+
+        /* 圆润描述文字 */
+        .card-header p {
+            margin: 10px 0 0;
+            font-family: 'Nunito', 'PingFang SC', sans-serif;
+            font-size: 15px;
+            color: #6c7a92;
+            line-height: 1.6;
+        }
+
+        /* 透明无背景搜索按钮 */
+        .btn-search {
+            background: transparent;
+            border: none;
+            padding: 6px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            vertical-align: middle;
+        }
+
+        .btn-search svg {
+            stroke: #2F6FD4;
+            transition: 0.2s;
+        }
+
+        .btn-search:hover svg {
+            stroke: #1e54a8;
+        }
+
+        /* 表单控件 */
+        form label {
+            margin-right: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        form select,
+        form input[type="text"] {
+            padding: 8px 10px;
+            border: 1px solid #d0d5dd;
+            border-radius: 6px;
+            margin-right: 10px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        form select:focus,
+        form input[type="text"]:focus {
+            border-color: #2F6FD4;
+            box-shadow: 0 0 0 3px rgba(47,111,212,0.15);
+        }
+
+        /* 表格 */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        table th {
+            background: #f0f4fa;
+            text-align: left;
+            padding: 12px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        table td {
+            padding: 12px;
+            border-top: 1px solid #eee;
+        }
+
+        table tr:hover td {
+            background: #f9fbff;
+        }
+
+        /* 编辑/删除链接 */
+        table a {
+            color: #2F6FD4;
+            text-decoration: none;
+            margin-right: 10px;
+        }
+
+        table a:hover {
+            text-decoration: underline;
+        }
+
+        /* 透明 + 号图标按钮 */
+        .btn-icon-add {
+            background: transparent;
+            border: none;
+            padding: 6px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            vertical-align: middle;
+            text-decoration: none;
+        }
+
+        .btn-icon-add svg {
+            stroke: #2F6FD4;
+            transition: 0.2s;
+        }
+
+        .btn-icon-add:hover svg {
+            stroke: #1e54a8;
+        }
+
+        /* 分页外层 */
+        .pagination-wrapper {
+            display: flex;
+            justify-content: center;
+            padding: 24px 0;
+        }
+
+        /* 分页整体容器 */
+        .pagination {
+            display: flex;
+            gap: 8px;
+            background: #fff;
+            padding: 10px 14px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            align-items: center;
+        }
+
+        /* 每一页：无论 a 还是 span，都用这个统一样式 */
+        .pagination a,
+        .pagination span {
+            min-width: 36px;
+            height: 36px;
+            padding: 0 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            font-size: 14px;
+            border-radius: 8px;
+
+            background: #f2f5fa;
+            color: #5b6b80;
+            text-decoration: none;
+            border: 1px solid transparent;
+
+            transition: 0.25s ease;
+        }
+
+        /* 悬浮 */
+        .pagination a:hover {
+            background: #e8edf5;
+            color: #2F6FD4;
+            border-color: #d0d9e6;
+        }
+
+        /* 当前页 */
+        .pagination .active {
+            background: #2F6FD4;
+            color: #fff;
+            border-color: #2F6FD4;
+            font-weight: 600;
+            box-shadow: 0 3px 8px rgba(47,111,212,0.35);
+        }
+
+        /* 修复循环产生的 div（页码容器）布局 */
+        .pagination > div {
+            display: flex;
+        }
+
     </style>
+
 </head>
-<body>
-<div class="header">
-    <!-- 导航 -->
-    <div style="text-align: right;">
-        <a th:href="@{/user/list}">用户管理</a> |
-        <a th:href="@{/logout}">退出登录</a>
-    </div>
-    <h2 style="color: blue; text-align: center;">知识卡列表</h2>
 
-    <!-- 筛选和搜索表单 -->
-    <form th:action="@{/knowledge/list}" method="get" style="text-align: center; margin-bottom: 10px;">
-        分类：
+<section layout:fragment="content">
+
+    <!-- 搜索表单 -->
+    <form class="card" th:action="@{/knowledge/list}" method="get">
+        <label>知识卡分类：</label>
         <select name="category">
-            <option value="">[所有类别]</option>
-            <!-- 可以将可选类别从后台传入，这里简单写死几个示例 -->
-            <option value="技术" th:selected="${currentCategory=='技术'}">技术</option>
-            <option value="生活" th:selected="${currentCategory=='生活'}">生活</option>
-            <option value="其他" th:selected="${currentCategory=='其他'}">其他</option>
+            <option value="">所有</option>
+            <option value="技术" th:selected="${currentCategory=='储蓄'}">储蓄</option>
+            <option value="生活" th:selected="${currentCategory=='预算'}">预算</option>
+            <option value="其他" th:selected="${currentCategory=='信用'}">信用</option>
+            <option value="其他" th:selected="${currentCategory=='金融基础'}">金融基础</option>
         </select>
-        标题关键字：<input type="text" name="keyword" th:value="${keyword}" />
-        <button type="submit">查询</button>
-        <a th:href="@{/knowledge/list}" style="margin-left: 10px;">重置</a>
+
+        <label>搜索：</label>
+        <input type="text" name="keyword" th:value="${keyword}" placeholder="知识标题关键字"/>
+
+        <!-- 搜索按钮（透明不换行） -->
+        <button class="btn-search" type="submit">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="7.5"></circle>
+                <line x1="21" y1="21" x2="16.2" y2="16.2"></line>
+            </svg>
+        </button>
+        <!-- 新增知识卡：+号图标按钮 -->
+        <a class="btn-icon-add" th:href="@{/knowledge/new}">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+        </a>
     </form>
-</div>
 
-<table>
-    <tr>
-        <th>ID</th><th>标题</th><th>类别</th><th>内容摘要</th><th>操作</th>
-    </tr>
-    <tr th:each="card : ${pageData.records}">
-        <td th:text="${card.id}"></td>
-        <td th:text="${card.title}"></td>
-        <td th:text="${card.category}"></td>
-        <td th:text="${#strings.substring(card.content,0,20) + '...'}"></td>
-        <td class="actions">
-            <a th:href="@{/knowledge/edit(id=${card.id})}">编辑</a>
-            <a th:href="@{/knowledge/delete(id=${card.id})}"
-               onclick="return confirm('确定删除该知识卡吗？');">删除</a>
-        </td>
-    </tr>
-</table>
+    <!-- 列表 -->
+    <div class="card">
+        <table>
+            <tr>
+                <th>ID</th><th>标题</th><th>类别</th><th>内容摘要</th><th>操作</th>
+            </tr>
 
-<!-- 分页控制 -->
-<div style="text-align: center; margin: 10px;">
-    第 <span th:text="${pageData.current}">1</span> /
-    <span th:text="${pageData.pages}">1</span> 页，
-    共 <span th:text="${pageData.total}">0</span> 条记录 <br/>
-    <a th:if="${pageData.current>1}"
-       th:href="@{/knowledge/list(page=${pageData.current-1}, keyword=${keyword}, category=${currentCategory})}">上一页</a>
-    <a th:if="${pageData.current < pageData.pages}"
-       th:href="@{/knowledge/list(page=${pageData.current+1}, keyword=${keyword}, category=${currentCategory})}">下一页</a>
-</div>
+            <tr th:each="card : ${pageData.records}">
+                <td th:text="${card.id}"></td>
+                <td th:text="${card.title}"></td>
+                <td th:text="${card.category}"></td>
+                <td th:text="${#strings.abbreviate(card.content, 30)}"></td>
+                <td>
+                    <a th:href="@{/knowledge/edit(id=${card.id})}">编辑</a>
+                    <a th:href="@{/knowledge/delete(id=${card.id})}" onclick="return confirm('确定要删除？')">删除</a>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <!-- 分页 -->
+    <div class="pagination-wrapper">
+        <div class="pagination">
 
-<!-- 新增按钮 -->
-<div style="width:90%; text-align: right; margin: 10px auto;">
-    <a th:href="@{/knowledge/new}" style="background: green; color: #fff; padding: 6px 12px; text-decoration: none;">新增知识卡</a>
-</div>
-</body>
+            <!-- 上一页 -->
+            <a th:if="${pageData.current > 1}"
+               th:href="@{/knowledge/list(page=${pageData.current - 1}, keyword=${keyword}, category=${currentCategory})}">
+                上一页
+            </a>
+
+            <!-- 页码循环 -->
+            <div th:each="i : ${#numbers.sequence(1, pageData.pages)}">
+
+                <!-- 当前页（不可点） -->
+                <span th:if="${i == pageData.current}"
+                      th:text="${i}"
+                      class="active">
+            </span>
+
+                <!-- 可点击页码 -->
+                <a th:if="${i != pageData.current}"
+                   th:text="${i}"
+                   th:href="@{/knowledge/list(page=${i}, keyword=${keyword}, category=${currentCategory})}">
+                </a>
+
+            </div>
+
+            <!-- 下一页 -->
+            <a th:if="${pageData.current < pageData.pages}"
+               th:href="@{/knowledge/list(page=${pageData.current + 1}, keyword=${keyword}, category=${currentCategory})}">
+                下一页
+            </a>
+
+        </div>
+    </div>
+
+
+
+
+
+</section>
+
 </html>
