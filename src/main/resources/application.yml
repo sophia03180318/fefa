@@ -18,4 +18,12 @@ spring:
 
 mybatis-plus:
   configuration:
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl  # SQL打印日志（可选）
+   # log-impl: org.apache.ibatis.logging.stdout.StdOutImpl  # SQL打印日志（可选）
+
+
+# Swagger配置
+swagger:
+  # 是否开启swagger
+  enabled: true
+  # 请求前缀
+  pathMapping: /

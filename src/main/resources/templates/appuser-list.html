@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+
+<head>
+    <title>APP用户管理</title>
+
+    <style>
+        /* 卡片（与知识卡完全一致） */
+        .card {
+            background: rgba(255,255,255,0.75);
+            backdrop-filter: blur(18px);
+            border-radius: 20px;
+            padding: 28px;
+            box-shadow: 0 10px 25px rgba(30,41,59,0.1);
+            border: 1px solid rgba(255,255,255,0.5);
+            margin-bottom: 28px;
+        }
+
+        /* 搜索栏统一风格 */
+        .search-bar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .search-bar input {
+            padding: 10px 14px;
+            border: 1px solid #d0d5dd;
+            border-radius: 8px;
+            font-size: 14px;
+            width: 240px;
+        }
+
+        .search-bar input:focus {
+            border-color: #3B82F6;
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
+            outline: none;
+        }
+
+        /* 图标按钮（统一风格：蓝色悬浮上移） */
+        .btn-icon {
+            background: transparent;
+            border: none;
+            padding: 6px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-icon svg {
+            stroke: #3B82F6;
+            transition: 0.2s;
+        }
+
+        .btn-icon:hover svg {
+            stroke: #1e54a8;
+            transform: translateY(-2px);
+        }
+
+        /* 表格统一 */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 12px;
+            font-size: 14px;
+        }
+        th {
+            background: #f0f4fa;
+            text-align: left;
+            padding: 12px;
+            font-weight: 600;
+            color: #555;
+        }
+        td {
+            padding: 12px;
+            border-top: 1px solid #eee;
+        }
+        tr:hover td {
+            background: #f9fbff;
+        }
+
+        table a {
+            color: #3B82F6;
+            text-decoration: none;
+            margin-right: 12px;
+        }
+        table a:hover { text-decoration: underline; }
+
+
+
+        @keyframes popup {
+            from { transform: scale(0.92); opacity: 0; }
+            to   { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-container h3 {
+            text-align: center;
+            color: #3B82F6;
+            font-size: 22px; font-weight: 700;
+            margin-top: 0;
+        }
+
+    </style>
+
+</head>
+
+
+
+<section layout:fragment="content">
+
+    <div class="card">
+
+        <!-- 顶部搜索 + 新增按钮 -->
+        <div class="search-bar">
+
+            <form th:action="@{/appUser/list}" method="get" style="display:flex; align-items:center; gap:12px;">
+                <input type="text" name="emailKeyword" th:value="${emailKeyword}" placeholder="按邮箱搜索用户"/>
+
+                <button class="btn-icon" type="submit">
+                    <svg width="24" height="24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"
+                         stroke="currentColor" viewBox="0 0 24 24">
+                        <circle cx="11" cy="11" r="7"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                </button>
+            </form>
+
+        </div>
+
+        <!-- 用户表格 -->
+        <table>
+            <tr>
+                <th>邮箱</th><th>用户名</th><th>创建时间</th>
+            </tr>
+
+            <tr th:each="u : ${pageData.records}">
+                <td th:text="${u.email}"></td>
+                <td th:text="${u.username}"></td>
+                <td th:text="${#dates.format(u.createTime, 'yyyy-MM-dd HH:mm:ss')}"></td>
+            </tr>
+        </table>
+    </div>
+
+</section>
+
+</html>

@@ -6,6 +6,7 @@ package com.jcca.fefa.entity;
  * @create: 2025/12/03 15:30
  **/
 
+import com.alibaba.excel.annotation.ExcelProperty;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
@@ -17,7 +18,14 @@ import java.io.Serializable;
 public class KnowledgeCard implements Serializable {
     @TableId(value = "id")
     private Long id;
-    private String title;    // 知识卡标题
-    private String content;  // 知识卡内容
-    private String category; // 知识卡类别
+    @ExcelProperty("title")
+    private String title;    // 知识卡中文标题
+    @ExcelProperty("content")
+    private String content;  // 知识卡中文内容
+    @ExcelProperty("titleEn")
+    private String titleEn;    // 知识卡英文标题
+    @ExcelProperty("contentEn")
+    private String contentEn;  // 知识卡英文内容
+
+
 }

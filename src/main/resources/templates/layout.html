@@ -30,7 +30,9 @@
 
         /* ---------------- 顶部导航栏（更现代 + 更清爽）---------------- */
         .top-nav {
-            height: 64px;
+            margin: 0 auto;         /* 居中 */
+            width: 95%;
+            height: 80px;
             padding: 0 32px;
             background: rgba(255, 255, 255, 0.7);
             backdrop-filter: blur(18px);
@@ -39,6 +41,8 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
+            border-radius: 5px;    /* ← 加圆角 */
+
             position: relative;
             z-index: 1000;
             border-bottom: 1px solid rgba(0,0,0,0.06);
@@ -111,26 +115,6 @@
             animation: fadeIn 0.3s ease-out;
         }
 
-        /* ---------------- 卡片玻璃效果（更高级） ---------------- */
-        .card {
-            background: var(--glass-bg);
-            backdrop-filter: blur(18px);
-            -webkit-backdrop-filter: blur(18px);
-
-            border-radius: var(--r20);
-            padding: 28px;
-
-            box-shadow: 0 10px 25px rgba(30,41,59,0.1);
-            border: 1px solid rgba(255,255,255,0.5);
-
-            transition: 0.3s ease;
-            margin-bottom: 28px;
-        }
-
-        .card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 14px 32px rgba(30,41,59,0.15);
-        }
 
         /* ---------------- 用户头像按钮 ---------------- */
         .user-menu {
@@ -260,11 +244,11 @@
             <i class="fa-solid fa-book"></i><span>知识卡</span>
         </a>
 
-        <a th:href="@{/knowledge/new}" class="icon-btn">
+        <a th:href="@{/appUser/list}" class="icon-btn">
             <i class="fa-solid fa-people-group"></i><span>APP用户</span>
         </a>
 
-        <a th:href="@{/knowledge/new}" class="icon-btn">
+        <a th:href="@{/challenge/list}" class="icon-btn">
             <i class="fa-solid fa-trophy"></i><span>挑战任务</span>
         </a>
 

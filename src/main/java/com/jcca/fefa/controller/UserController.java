@@ -28,7 +28,7 @@ public class UserController {
                             @RequestParam(value="page", defaultValue="1") int page,
                             @RequestParam(value="nameKeyword", required=false) String nameKeyword) {
         // 构造分页参数，当前页号和每页大小（每页5条作为示例）
-        Page<User> pageParam = new Page<>(page, 5);
+        Page<User> pageParam = new Page<>(page, 10);
         IPage<User> pageData;
         if (nameKeyword != null && !nameKeyword.isEmpty()) {
             // 按名称模糊查询分页

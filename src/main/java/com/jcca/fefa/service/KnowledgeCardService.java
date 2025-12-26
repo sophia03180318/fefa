@@ -8,5 +8,8 @@ package com.jcca.fefa.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jcca.fefa.entity.KnowledgeCard;
 
+import java.util.List;
+
 public interface KnowledgeCardService extends IService<KnowledgeCard> {
+    List<String> getCategory();
 }

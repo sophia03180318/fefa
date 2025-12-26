@@ -4,34 +4,280 @@
       layout:decorate="~{layout}">
 
 <head>
-    <title>用户列表</title>
+    <title>用户管理</title>
+
+    <style>
+        /* 卡片（与知识卡完全一致） */
+        .card {
+            background: rgba(255,255,255,0.75);
+            backdrop-filter: blur(18px);
+            border-radius: 20px;
+            padding: 28px;
+            box-shadow: 0 10px 25px rgba(30,41,59,0.1);
+            border: 1px solid rgba(255,255,255,0.5);
+            margin-bottom: 28px;
+        }
+
+        /* 搜索栏统一风格 */
+        .search-bar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .search-bar input {
+            padding: 10px 14px;
+            border: 1px solid #d0d5dd;
+            border-radius: 8px;
+            font-size: 14px;
+            width: 240px;
+        }
+
+        .search-bar input:focus {
+            border-color: #3B82F6;
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
+            outline: none;
+        }
+
+        /* 图标按钮（统一风格：蓝色悬浮上移） */
+        .btn-icon {
+            background: transparent;
+            border: none;
+            padding: 6px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-icon svg {
+            stroke: #3B82F6;
+            transition: 0.2s;
+        }
+
+        .btn-icon:hover svg {
+            stroke: #1e54a8;
+            transform: translateY(-2px);
+        }
+
+        /* 表格统一 */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 12px;
+            font-size: 14px;
+        }
+        th {
+            background: #f0f4fa;
+            text-align: left;
+            padding: 12px;
+            font-weight: 600;
+            color: #555;
+        }
+        td {
+            padding: 12px;
+            border-top: 1px solid #eee;
+        }
+        tr:hover td {
+            background: #f9fbff;
+        }
+
+        table a {
+            color: #3B82F6;
+            text-decoration: none;
+            margin-right: 12px;
+        }
+        table a:hover { text-decoration: underline; }
+
+
+
+        /* =============== 弹窗（完全统一） =============== */
+        .modal-mask {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.45);
+            display: none;
+            justify-content: center; align-items: center;
+            z-index: 9999;
+        }
+
+        .modal-container {
+            width: 520px; background: #fff; border-radius: 16px;
+            padding: 32px; box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            animation: popup 0.25s ease-out; position: relative;
+        }
+
+        @keyframes popup {
+            from { transform: scale(0.92); opacity: 0; }
+            to   { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-close {
+            position: absolute; right: 18px; top: 18px;
+            background: transparent; border: none;
+            font-size: 20px; cursor: pointer; color: #888;
+        }
+        .modal-close:hover { color: #444; }
+
+        .modal-container h3 {
+            text-align: center;
+            color: #3B82F6;
+            font-size: 22px; font-weight: 700;
+            margin-top: 0;
+        }
+
+        .modal-form { display: flex; flex-direction: column; gap: 16px; }
+        .modal-form label { font-size: 14px; font-weight: 600; color: #444; }
+
+        .modal-input {
+            width: 100%; padding: 12px;
+            border: 1px solid #d0d5dd; border-radius: 10px;
+            background: #f9fbff; font-size: 14px;
+        }
+        .modal-input:focus {
+            border-color: #3B82F6;
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
+            background: #fff;
+            outline: none;
+        }
+
+        .modal-actions { display: flex; justify-content: flex-end; gap: 12px; }
+
+        .btn-primary {
+            background: #3B82F6; border: none; color: #fff;
+            padding: 10px 22px; border-radius: 8px; cursor: pointer;
+        }
+        .btn-primary:hover { background: #1f54b6; }
+
+        .btn-ghost {
+            background: #fff; border: 1px solid #d0d5dd;
+            padding: 10px 22px; border-radius: 8px; cursor: pointer;
+        }
+    </style>
+
+    <script>
+        // 打开弹窗
+        function openUserModal() {
+            document.getElementById("userModal").style.display = "flex";
+        }
+        function closeUserModal() {
+            document.getElementById("userModal").style.display = "none";
+        }
+
+        // 新增用户
+        function addUser() {
+            document.getElementById("modalTitle").innerText = "新增用户";
+            document.getElementById("userId").value = "";
+            document.getElementById("username").value = "";
+            document.getElementById("email").value = "";
+            document.getElementById("password").value = "";
+
+            openUserModal();
+        }
+
+        // 编辑用户
+        function editUser(id) {
+            fetch("/user/get/" + id)
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById("modalTitle").innerText = "编辑用户";
+                    document.getElementById("userId").value = data.id;
+                    document.getElementById("username").value = data.username;
+                    document.getElementById("email").value = data.email;
+                    document.getElementById("password").value = data.password; // 明文回显（你的选择 B）
+
+                    openUserModal();
+                });
+        }
+    </script>
 </head>
+
+
 
 <section layout:fragment="content">
 
-    <!-- 你的内容保持不变，这里我略写 -->
     <div class="card">
-        <h2>用户列表</h2>
 
-        <form class="search" th:action="@{/user/list}" method="get">
-            <input type="text" name="nameKeyword" th:value="${nameKeyword}" placeholder="按名称搜索用户"/>
-            <button type="submit">搜索</button>
-        </form>
+        <!-- 顶部搜索 + 新增按钮 -->
+        <div class="search-bar">
 
+            <form th:action="@{/user/list}" method="get" style="display:flex; align-items:center; gap:12px;">
+                <input type="text" name="nameKeyword" th:value="${nameKeyword}" placeholder="按用户名搜索用户"/>
+
+                <button class="btn-icon" type="submit">
+                    <svg width="24" height="24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"
+                         stroke="currentColor" viewBox="0 0 24 24">
+                        <circle cx="11" cy="11" r="7"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                </button>
+            </form>
+
+            <button class="btn-icon" onclick="addUser()">
+                <svg width="26" height="26" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+                     stroke="currentColor" viewBox="0 0 24 24">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+            </button>
+        </div>
+
+        <!-- 用户表格 -->
         <table>
             <tr>
                 <th>ID</th><th>用户名</th><th>邮箱</th><th>操作</th>
             </tr>
+
             <tr th:each="u : ${pageData.records}">
                 <td th:text="${u.id}"></td>
                 <td th:text="${u.username}"></td>
                 <td th:text="${u.email}"></td>
-                <td class="actions">
-                    <a th:href="@{/user/edit(id=${u.id})}">编辑</a>
-                    <a th:href="@{/user/delete(id=${u.id})}" onclick="return confirm('确认删除？');">删除</a>
+                <td>
+                    <a href="javascript:void(0);" th:onclick="editUser([[${u.id}]])">编辑</a>
+                    <a th:href="@{/user/delete(id=${u.id})}" onclick="return confirm('确定删除该用户？')">删除</a>
                 </td>
             </tr>
         </table>
+
+    </div>
+
+
+
+    <!-- 弹窗 -->
+    <div id="userModal" class="modal-mask" onclick="closeUserModal()">
+
+        <div class="modal-container" onclick="event.stopPropagation()">
+
+            <button class="modal-close" onclick="closeUserModal()">×</button>
+
+            <h3 id="modalTitle">新增用户</h3>
+
+            <form class="modal-form" th:action="@{/user/save}" method="post">
+
+                <input type="hidden" id="userId" name="id"/>
+
+                <div>
+                    <label>用户名</label>
+                    <input id="username" name="username" class="modal-input" required/>
+                </div>
+
+                <div>
+                    <label>邮箱</label>
+                    <input id="email" name="email" class="modal-input" required/>
+                </div>
+
+                <div>
+                    <label>密码（编辑时明文回显）</label>
+                    <input id="password" name="password" class="modal-input" required/>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="submit" class="btn-primary">保存</button>
+                    <button type="button" class="btn-ghost" onclick="closeUserModal()">取消</button>
+                </div>
+
+            </form>
+        </div>
+
     </div>
 
 </section>

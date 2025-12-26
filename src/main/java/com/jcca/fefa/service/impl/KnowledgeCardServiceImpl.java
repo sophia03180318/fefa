@@ -6,6 +6,10 @@ import com.jcca.fefa.mapper.KnowledgeCardMapper;
 import com.jcca.fefa.service.KnowledgeCardService;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
+import java.util.Collections;
+import java.util.List;
+
 /**
  * @description:
  * @author: sophia
@@ -14,4 +18,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class KnowledgeCardServiceImpl extends ServiceImpl<KnowledgeCardMapper, KnowledgeCard>
         implements KnowledgeCardService {
+
+    @Resource
+    private KnowledgeCardMapper knowledgeCardMapper;
+    @Override
+    public List<String> getCategory() {
+     return  knowledgeCardMapper.getCategory();
+    }
 }

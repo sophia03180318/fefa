@@ -4,34 +4,72 @@
       layout:decorate="~{layout}">
 
 <head>
-    <title>知识卡中心</title>
+    <title>挑战任务管理</title>
 
     <style>
         * {
             transition: none !important;
             animation: none !important;
         }
+        .toast {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            z-index: 2000;
+
+            min-width: 240px;
+            max-width: 420px;
+            padding: 14px 18px;
+
+            border-radius: 12px;
+            font-size: 14px;
+            line-height: 1.5;
+
+            background: #ffffff;
+            color: #344054;
+            border: 1px solid #e4e7ec;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+
+            opacity: 0;
+            transform: translateY(-8px);
+            transition: all 0.25s ease;
+
+            pointer-events: none;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .toast.success {
+            border-left: 4px solid #12B76A;
+        }
+
+        .toast.error {
+            border-left: 4px solid #F04438;
+        }
         .tool-pill {
-             display: inline-flex;
-             align-items: center;
-             justify-content: center;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
 
-             height: 32px;
-             padding: 0 14px;
-             margin-left: 12px;
+            height: 32px;
+            padding: 0 14px;
+            margin-left: 12px;
 
-             font-size: 13px;
-             font-weight: 350;
+            font-size: 13px;
+            font-weight: 350;
 
-             color: #475467;
-             background: #f8fafc;
+            color: #475467;
+            background: #f8fafc;
 
-             border: 1px solid #e4e7ec;
-             border-radius: 999px;
+            border: 1px solid #e4e7ec;
+            border-radius: 999px;
 
-             cursor: pointer;
-             user-select: none;
-         }
+            cursor: pointer;
+            user-select: none;
+        }
 
         .tool-pill:hover {
             background: #eef4ff;
@@ -42,6 +80,7 @@
         .tool-upload {
             cursor: pointer;
         }
+
         body {
             background: #f5f7fb;
             font-family: "Inter", "PingFang SC", "Microsoft YaHei", sans-serif;
@@ -77,17 +116,18 @@
             background: #f9fbff;
         }
 
-        .btn-search, .btn-icon {
-            background: none;
-            border: none;
-            cursor: pointer;
-        }
-
-        input[type="text"] {
+        input[type="text"], select {
             padding: 8px 10px;
             border-radius: 6px;
             border: 1px solid #d0d5dd;
             margin-right: 10px;
+        }
+
+        .btn-search, .btn-icon {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
         }
 
         /* ===== 弹窗 ===== */
@@ -173,56 +213,14 @@
         .pagination .active {
             background: #2F6FD4;
             color: #fff;
-        }.toast {
-             position: fixed;
-             top: 24px;
-             right: 24px;
-             z-index: 2000;
-
-             min-width: 260px;
-             max-width: 420px;
-
-             padding: 14px 18px;
-             border-radius: 12px;
-
-             font-size: 14px;
-             line-height: 1.5;
-
-             background: #ffffff;
-             color: #344054;
-
-             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-             border: 1px solid #e4e7ec;
-
-             opacity: 0;
-             transform: translateY(-8px);
-             transition: all 0.25s ease;
-
-             pointer-events: none;
-         }
-
-        /* 显示状态 */
-        .toast.show {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* 成功 */
-        .toast.success {
-            border-left: 4px solid #12B76A;
-        }
-
-        /* 失败 */
-        .toast.error {
-            border-left: 4px solid #F04438;
         }
     </style>
 
     <script>
         function openAddModal() {
-            document.getElementById("modalTitle").innerText = "新增知识卡";
-            document.getElementById("cardForm").reset();
-            document.getElementById("cardId").value = "";
+            document.getElementById("modalTitle").innerText = "新增挑战任务";
+            document.getElementById("taskForm").reset();
+            document.getElementById("taskId").value = "";
             document.getElementById("modal").style.display = "flex";
         }
 
@@ -230,23 +228,24 @@
             document.getElementById("modal").style.display = "none";
         }
 
-        function editCard(id) {
-            fetch("/knowledge/get/" + id)
+        function editTask(id) {
+            fetch("/challenge/get/" + id)
                 .then(res => res.json())
                 .then(data => {
-                    document.getElementById("modalTitle").innerText = "编辑知识卡";
-                    document.getElementById("cardId").value = data.id;
-                    document.getElementById("title").value = data.title;
-                    document.getElementById("titleEn").value = data.titleEn;
+                    document.getElementById("modalTitle").innerText = "编辑挑战任务";
+                    document.getElementById("taskId").value = data.id;
+                    document.getElementById("type").value = data.type;
+                    document.getElementById("days").value = data.days;
+                    document.getElementById("amountMin").value = data.amountMin;
+                    document.getElementById("amountMax").value = data.amountMax;
                     document.getElementById("content").value = data.content;
                     document.getElementById("contentEn").value = data.contentEn;
                     document.getElementById("modal").style.display = "flex";
                 });
         }
     </script>
-
     <script>
-        function importExcel(input) {
+        function importChallengeExcel(input) {
             if (!input.files || input.files.length === 0) {
                 return;
             }
@@ -254,7 +253,7 @@
             const file = input.files[0];
 
             if (!file.name.endsWith(".xlsx")) {
-                alert("请上传 .xlsx 文件");
+                showToast("请上传 .xlsx 文件", "error");
                 input.value = "";
                 return;
             }
@@ -262,31 +261,31 @@
             const formData = new FormData();
             formData.append("file", file);
 
-            fetch("/knowledge/import", {
+            fetch("/challenge/import", {
                 method: "POST",
                 body: formData
             })
                 .then(res => res.text())
                 .then(msg => {
                     showToast(msg, "success");
-                    setTimeout(() => {
-                        location.reload();
-                    }, 2000);
+                    setTimeout(() => location.reload(), 2000);
                 })
                 .catch(() => {
-                    showToast("导入失败!", "error");
+                    showToast("导入失败，请稍后重试", "error");
                 })
                 .finally(() => {
                     input.value = "";
                 });
         }
     </script>
+
     <script>
-        function showToast(message, type = "success") {
+        function showToast(message, type) {
             const toast = document.getElementById("toast");
+            if (!toast) return;
 
             toast.textContent = message;
-            toast.className = "toast show " + type;
+            toast.className = "toast show " + (type || "success");
 
             setTimeout(() => {
                 toast.classList.remove("show");
@@ -298,57 +297,66 @@
 <section layout:fragment="content">
 
     <!-- 🔍 搜索 -->
-    <form class="card" th:action="@{/knowledge/list}" method="get">
-        <label>标题搜索：</label>
-        <input type="text"
-               name="title"
-               th:value="${title}"
-               placeholder="内容搜索"/>
+    <form class="card" th:action="@{/challenge/list}" method="get">
         <label>内容搜索：</label>
-        <input type="text"
-               name="contentKeyword"
-               th:value="${contentKeyword}"
-               placeholder="内容搜索"/>
+        <input type="text" name="contentKeyword" th:value="${contentKeyword}" />
+
+        <label>类型：</label>
+        <select name="type">
+            <option value="">全部</option>
+            <option value="1" th:selected="${type == 1}">累计</option>
+            <option value="2" th:selected="${type == 2}">连续</option>
+        </select>
 
         <button class="btn-search" type="submit">🔍</button>
 
-        <button type="button" class="btn-icon" onclick="openAddModal()">➕</button>
+        <button type="button"
+                class="btn-icon"
+                onclick="openAddModal()"
+                >➕</button>
+
         <label class="tool-pill tool-upload">
             导入数据
             <input type="file"
                    accept=".xlsx"
-                   onchange="importExcel(this)"
+                   onchange="importChallengeExcel(this)"
                    hidden />
         </label>
 
         <button type="button"
                 class="tool-pill"
-                onclick="window.location.href='/knowledge/exportTemplate'">
+                onclick="window.location.href='/challenge/exportTemplate'">
             下载模板
         </button>
     </form>
 
+    <!-- 📋 表格 -->
     <div class="card">
         <table>
             <tr>
-                <th>ID</th>
-                <th>中文标题</th>
-                <th>英文标题</th>
+                <th>类型</th>
+                <th>下限</th>
+                <th>上限</th>
+                <th>天数</th>
                 <th>中文内容</th>
                 <th>英文内容</th>
                 <th>操作</th>
             </tr>
 
-            <tr th:each="card : ${pageData.records}">
-                <td th:text="${card.id}"></td>
-                <td th:text="${card.title}"></td>
-                <td th:text="${card.titleEn}"></td>
-                <td th:text="${#strings.abbreviate(card.content, 100)}"></td>
-                <td th:text="${#strings.abbreviate(card.contentEn, 100)}"></td>
+            <tr th:each="t : ${pageData.records}">
+                <td th:switch="${t.type}">
+                    <span th:case="1">累计</span>
+                    <span th:case="2">连续</span>
+                </td>
+                <td th:text="${t.amountMin}"></td>
+                <td th:text="${t.amountMax}"></td>
+                <td th:text="${t.days}"></td>
+                <td th:text="${#strings.abbreviate(t.content, 100)}"></td>
+                <td th:text="${#strings.abbreviate(t.contentEn, 100)}"></td>
                 <td>
-                    <a href="javascript:void(0)" th:onclick="editCard([[${card.id}]])">编辑</a>
+                    <a href="javascript:void(0)" th:onclick="editTask([[${t.id}]])">编辑</a>
                     |
-                    <a th:href="@{/knowledge/delete(id=${card.id})}"
+                    <a th:href="@{/challenge/delete(id=${t.id})}"
                        onclick="return confirm('确定删除？')">删除</a>
                 </td>
             </tr>
@@ -358,17 +366,22 @@
     <!-- 📄 分页 -->
     <div class="pagination">
         <a th:if="${pageData.current > 1}"
-           th:href="@{/knowledge/list(page=${pageData.current-1}, contentKeyword=${contentKeyword})}">上一页</a>
+           th:href="@{/challenge/list(page=${pageData.current-1}, contentKeyword=${contentKeyword}, type=${type})}">
+            上一页
+        </a>
 
         <span th:each="i : ${#numbers.sequence(1, pageData.pages)}">
             <span th:if="${i == pageData.current}" th:text="${i}" class="active"></span>
             <a th:if="${i != pageData.current}"
                th:text="${i}"
-               th:href="@{/knowledge/list(page=${i}, contentKeyword=${contentKeyword})}"></a>
+               th:href="@{/challenge/list(page=${i}, contentKeyword=${contentKeyword}, type=${type})}">
+            </a>
         </span>
 
         <a th:if="${pageData.current < pageData.pages}"
-           th:href="@{/knowledge/list(page=${pageData.current+1}, contentKeyword=${contentKeyword})}">下一页</a>
+           th:href="@{/challenge/list(page=${pageData.current+1}, contentKeyword=${contentKeyword}, type=${type})}">
+            下一页
+        </a>
     </div>
 
     <!-- ✨ 弹窗 -->
@@ -376,17 +389,26 @@
         <div class="modal" onclick="event.stopPropagation()">
 
             <button class="modal-close" onclick="closeModal()">×</button>
-            <h3 id="modalTitle">新增知识卡</h3>
+            <h3 id="modalTitle">新增挑战任务</h3>
 
-            <form id="cardForm" class="modal-form" th:action="@{/knowledge/save}" method="post">
+            <form id="taskForm" class="modal-form" th:action="@{/challenge/save}" method="post">
 
-                <input type="hidden" id="cardId" name="id"/>
+                <input type="hidden" id="taskId" name="id"/>
 
-                <label>中文标题</label>
-                <input id="title" name="title" class="modal-input" required/>
+                <label>挑战类型</label>
+                <select id="type" name="type" class="modal-input">
+                    <option value="1">累计</option>
+                    <option value="2">连续</option>
+                </select>
 
-                <label>英文标题</label>
-                <input id="titleEn" name="titleEn" class="modal-input" required/>
+                <label>最小值</label>
+                <input id="amountMin" name="amountMin" class="modal-input" required/>
+
+                <label>最大值</label>
+                <input id="amountMax" name="amountMax" class="modal-input" required/>
+
+                <label>天数</label>
+                <input id="days" name="days" class="modal-input" required/>
 
                 <label>中文内容</label>
                 <textarea id="content" name="content" class="modal-textarea" required></textarea>
@@ -400,7 +422,7 @@
             </form>
         </div>
     </div>
-    <!-- 导入结果提示 -->
+    <!-- Toast 提示 -->
     <div id="toast" class="toast"></div>
 </section>
 </html>
